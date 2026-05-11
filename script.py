@@ -60,14 +60,8 @@ try:
     print(("\r[✓] Ping correcto"))
 
 ############### Sistema Operativo ###############
-    #Separamos los resultados
-    ping = ping.stdout.split()
-
-    #Sacamos el valor del ttl
-    ping = ping[12]
-
-    #Esta expresion regular busca: \d cualquier numero, {1,3} que tenga entre 1 y 3 digitos
-    ttl = int(re.findall(r"\d{1,3}", ping)[0])
+    #Buscamos en el ping, la salida del ttl y guardamos el valor
+    ttl = re.findall(r"ttl=(\d+)", ping.stdout)[0]
 
     #Comprobamos que sistema es por su ttl
     if ttl >= 0 and ttl <= 64:
@@ -76,41 +70,46 @@ try:
         print("Windows")
     else:
         print("Not found")
-            
+
+########## NMAP ##########           
     animar = True
     hilo = threading.Thread(target=spinner_animacion)
     hilo.start()
 
     try:
-########## NMAP ##########
         escaneo = subprocess.run(["nmap", "-p-", "--open", "-sS", "--min-rate", "5000", "-n", "-Pn", ip], capture_output=True, text=True)
 
         escaneo = escaneo.stdout
 
-        # # (\d{1,5}) captura un número entre 1 y 5 cifras, /tcp justo después debe haber “/tcp”, \s+open uno o más espacios y luego la palabra “open”
+        #(\d{1,5}) captura un número entre 1 y 5 cifras, /tcp justo después debe haber “/tcp”, \s+open uno o más espacios y luego la palabra “open”
         encontrados = re.findall(r"(\d{1,5})/tcp\s+open", escaneo)
 
-        # # Toma solo la parte numérica antes del /
+        #Toma solo la parte numérica antes del /
         puertos = [e.split("/")[0] for e in encontrados]
 
-        # # Une con comas
+        #Une con comas
         puertos =  ",".join(puertos)
 
-        print(puertos)
-# Guardar output  en archivo (Open)
-        escaneo2 = subprocess.run(["nmap", "-p", puertos, "-sCV", ip, "-oN targeted"], capture_output=True, text=True)
+        print(f"\rThe open ports are:\n{puertos} ")
+        
+        #Guarda la info en el archivo nmapscan
+        escaneo2 = subprocess.run(["nmap", "-p", puertos, "-sCV", ip, "-oN", "nmapscan"], capture_output=True, text=True)
+        print(escaneo2)
 
     finally:
         # Detener la animación
         animar = False
         hilo.join()
-        print("\r Escaneo completado ")
+        print("\rEscaneo completado ")
 
 
 
 except Exception as e:
 
     print(e)
+
+finally:
+    print("Program has finish")
 
     # ########## NMAP ##########
     # escaneo = subprocess.run(["nmap", "-p-", "--open", "-sS", "--min-rate", "5000", "-n", "-Pn", ip], capture_output=True, text=True)
