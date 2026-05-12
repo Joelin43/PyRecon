@@ -16,27 +16,27 @@ import shutil
 
 def dependencias():
     #Comprobar si estan las herramientas instaladas
-    dependencias=["efq"]
-    installed=True
+    dependencias=["nmap"]
+    notInstalled=[]
     for i in dependencias:
+        installed=True
         if shutil.which("pacman"):
             pacman = subprocess.run(["pacman", "-Qi", i], capture_output=True)
             if pacman.returncode != 0:
                 installed = False
+                notInstalled.append(i)
         elif shutil.which("dpkg"):
             dpkg = subprocess.run(["dpkg", "-s", i], capture_output=True)
             if dpkg.returncode != 0:
                 installed = False
-# Tengo que mirar como ir comprobando paquete por paquete
-dependencias()
+                notInstalled.append(i)
 
-if 7 != 0:
-        print("nmap is not install")
-
-        print("Sugerencias para instalarlo:")
-        print("  • Debian/Ubuntu/Kali: sudo apt install nmap")
-        print("  • Arch Linux:         sudo pacman -S nmap")
-
+        if installed:
+             print(f"[✔] {i} is installed")
+        else:
+            print(f"[X] {i} is not install")
+    if len(notInstalled) > 0:
+        sys.exit(1)
 
 def spinner_animacion(stop_event):
     caracteres = ['[-]', '[\\]', '[|]', '[/]']
@@ -137,6 +137,8 @@ def nmapscan(ip):
 def main():
     #Verifica si se han dado argumentos
     argumentos(sys.argv)
+
+    dependencias()
     #Definimos la variable ip con el parametro que seria la ip
     ip = sys.argv[1]
     #Verificamos que la ip dada es correcta
