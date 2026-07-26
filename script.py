@@ -12,7 +12,7 @@ import time
 import shutil
 
 
-# Funciones
+# Funcions
 
 def dependencias():
     #Comprobar si estan las herramientas instaladas
@@ -54,7 +54,7 @@ def argumentos(args):
         print("To many arguments, example: script.py [x.x.x.x]")
         sys.exit(1)
     else:
-        print("The program requires an argument: script.py [x.x.x.x]")
+        print("The script requires an argument: script.py [x.x.x.x]")
         sys.exit(1)
 
 def verificarIp(ip):
@@ -86,7 +86,7 @@ def ping(ip):
             print("\r[X] There's not conection with the machine")
             sys.exit(1)
     
-    print(("\r[✓] Ping correcto"))
+    print(("\r[✓] Ping OK"))
     return ping.stdout
 
 def whichOS(ping):
@@ -129,9 +129,7 @@ def nmapscan(ip):
         # Detener la animación
         stop_event.set()
         hilo.join()
-        print("\rEscaneo completado, guardado en el archvio nmapscan. Recomendable visualizar con (bat nmapscan -l java)")
-
-    
+        print("\rScan completed, guardado en el archvio nmapscan. Recomendable visualizar con (bat nmapscan -l java)")
 
 
 def main():
@@ -149,36 +147,3 @@ def main():
     nmapscan(ip)
 
 main()
-
-
-
-# ########## NMAP ##########           
-#     stop_event = threading.Event()
-#     hilo = threading.Thread(target=spinner_animacion, args=(stop_event,))
-#     hilo.start()
-
-#     try:
-#         escaneo = subprocess.run(["nmap", "-p-", "--open", "-sS", "--min-rate", "5000", "-n", "-Pn", ip], capture_output=True, text=True)
-
-#         escaneo = escaneo.stdout
-
-#         #(\d{1,5}) captura un número entre 1 y 5 cifras, /tcp justo después debe haber “/tcp”, \s+open uno o más espacios y luego la palabra “open”
-#         encontrados = re.findall(r"(\d{1,5})/tcp\s+open", escaneo)
-
-#         #Toma solo la parte numérica antes del /
-#         puertos = [e.split("/")[0] for e in encontrados]
-
-#         #Une con comas
-#         puertos =  ",".join(puertos)
-
-#         print(f"\rThe open ports are:\n{puertos} ")
-        
-#         #Guarda la info en el archivo nmapscan
-#         subprocess.run(["nmap", "-p", puertos, "-sCV", ip, "-oN", "nmapscan"], capture_output=True, text=True)
-        
-
-#     finally:
-#         # Detener la animación
-#         stop_event.set()
-#         hilo.join()
-#         print("\rEscaneo completado, guardado en el archvio nmapscan. Recomendable visualizar con (bat nmapscan -l java)")
